@@ -9,3 +9,14 @@ spring:
       authentication-database: admin
 server:
   port: 8088
+
+
+# URLs
+# connect to websocket- /ws
+# subscribe to own queue- /user/{nickname}/queue/messages
+# subscribe to get notified about users- /user/public
+# send message- /app/chat
+# connect and register the user- /app/user.addUser
+# logout- /app/user.disconnectUser
+# fetch the list of all connected users REST- /users
+# fetch and display user chats REST- /messages/{nickname}/{selectedUserId}

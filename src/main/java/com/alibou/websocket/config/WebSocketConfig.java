@@ -19,9 +19,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/user");
+        registry.enableSimpleBroker("/user");  //user subscribes to /user/{nickname}/queue/messages to receive own messages
         registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
+        registry.setUserDestinationPrefix("/user"); //This line sets the user destination prefix to "/user", indicating that user-specific destinations should start with "/user".
+            //this must be same as the enableSimpleMessageBroker endpoint, to send the message to the correct queue
     }
 
     @Override

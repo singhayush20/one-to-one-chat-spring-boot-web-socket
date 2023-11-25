@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @MessageMapping("/user.addUser")
-    @SendTo("/user/public")
+    @SendTo("/user/public") //send to this endpoint to notify all users about new connected users
     public User addUser(
             @Payload User user
     ) {
@@ -25,8 +25,8 @@ public class UserController {
         return user;
     }
 
-    @MessageMapping("/user.disconnectUser")
-    @SendTo("/user/public")
+    @MessageMapping("/user.disconnectUser") //Clients send messages to this destination to disconnect users.
+    @SendTo("/user/public") //send to this endpoint to notify all users about new connected users
     public User disconnectUser(
             @Payload User user
     ) {

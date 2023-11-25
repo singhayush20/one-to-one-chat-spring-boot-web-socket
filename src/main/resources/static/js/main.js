@@ -14,6 +14,8 @@ let nickname = null;
 let fullname = null;
 let selectedUserId = null;
 
+//method to connect to the websocket
+//called when the user clicks Enter Chatroom button
 function connect(event) {
     nickname = document.querySelector('#nickname').value.trim();
     fullname = document.querySelector('#fullname').value.trim();
@@ -21,21 +23,24 @@ function connect(event) {
     if (nickname && fullname) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
-
+        //path to our websocket
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, onConnected, onError);
+        stompClient.connect({}, onConnected/*What to do when the user is connected */, onError/*What to do if error occurs */);
     }
     event.preventDefault();
 }
 
 
 function onConnected() {
+    //user subscribes to his/her own queue
     stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
+    //subscribe to user/public to get notified when a user connects or disconnects
     stompClient.subscribe(`/user/public`, onMessageReceived);
 
     // register the connected user
+    // the /app is configured as the application destinaton prefix
     stompClient.send("/app/user.addUser",
         {},
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'ONLINE'})
@@ -45,6 +50,7 @@ function onConnected() {
 }
 
 async function findAndDisplayConnectedUsers() {
+    //fetch the list of all connected users
     const connectedUsersResponse = await fetch('/users');
     let connectedUsers = await connectedUsersResponse.json();
     connectedUsers = connectedUsers.filter(user => user.nickName !== nickname);
@@ -144,6 +150,7 @@ function sendMessage(event) {
             content: messageInput.value.trim(),
             timestamp: new Date()
         };
+        //send chat message
         stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
         displayMessage(nickname, messageInput.value.trim());
         messageInput.value = '';
@@ -177,6 +184,7 @@ async function onMessageReceived(payload) {
 }
 
 function onLogout() {
+    //disconnect the user
     stompClient.send("/app/user.disconnectUser",
         {},
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'OFFLINE'})
